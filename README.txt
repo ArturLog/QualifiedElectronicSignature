@@ -1,3 +1,5 @@
+How to run application
+
 # Create virtual environment
 python -m venv .venv
 
