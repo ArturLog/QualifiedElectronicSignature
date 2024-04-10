@@ -2,9 +2,10 @@ import tkinter as tk
 from tkinter import messagebox
 
 class MainFrame(tk.Frame):
-    def __init__(self, parent):
+    def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        tk.Button(self, text="Sign Document", command=self.sign_document).pack(fill=tk.X, padx=50, pady=5)
+        self.controller = controller
+        tk.Button(self, text="Sign Document", command=lambda: controller.show_frame("SignDocumentFrame")).pack(fill=tk.X, padx=50, pady=5)
         tk.Button(self, text="Verify Signature", command=self.verify_signature).pack(fill=tk.X, padx=50, pady=5)
         tk.Button(self, text="Encrypt File", command=self.encrypt_file).pack(fill=tk.X, padx=50, pady=5)
         tk.Button(self, text="Decrypt File", command=self.decrypt_file).pack(fill=tk.X, padx=50, pady=5)

@@ -1,5 +1,6 @@
 import tkinter as tk
 from frames.MainFrame import MainFrame
+from frames.SignDocumentFrame import SignDocumentFrame
 
 DEFAULT_WINDOW_WIDTH = 300
 DEFAULT_WINDOW_HEIGHT = 200
@@ -11,19 +12,17 @@ class AppController(tk.Tk):
         self.title(DEFAULT_TITLE)
         self.geometry(f"{DEFAULT_WINDOW_WIDTH}x{DEFAULT_WINDOW_HEIGHT}")
         
-        # Initialize the main frame
+        self.frames = {}
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
+        container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
 
-        self.frames = {}
-        for F in (MainFrame,):
+        # Initializing all frames
+        for F in (MainFrame, SignDocumentFrame):
             frame_name = F.__name__
-            frame = F(parent=container)
+            frame = F(parent=container, controller=self)
             self.frames[frame_name] = frame
-
-            # Put all of the frames in the same location;
-            # The one on the top of the stacking order
-            # will be the one that is visible.
             frame.grid(row=0, column=0, sticky="nsew")
 
         self.show_frame("MainFrame")
