@@ -24,23 +24,24 @@ class RSAKeysGenerator:
         
         :param pin: A string PIN to derive an encryption key for the private key.
         """
-        self.private_key = None
-        self.public_key = None
-        self.pin = pin
+        self._private_key = None
+        self._public_key = None
+        self._pin = pin
     
     def generate_rsa_keys(self):
         """
         Generates a pair of RSA keys with a 4096-bit key size and a public exponent of 65537,
         which are standard and secure values for RSA encryption.
         """
-        self.private_key = rsa.generate_private_key(
+        self._private_key = rsa.generate_private_key(
             public_exponent=DEFAULT_RSA_PUBLIC_EXPONENT,  
             key_size=DEFAULT_RSA_KEY_SIZE,  
             backend=default_backend()   # Use the default backend
         )
-        self.public_key = self.private_key.public_key()
+        self._public_key = self._private_key.public_key()
+        print("Generated RSA key pair successfully!")
         
-    def encrypt_private_key(self):
+    def _encrypt_private_key(self):
         """
         Encrypts the private key using AES in CFB mode with a key derived from the provided PIN.
         This method uses a salt for the key derivation function to enhance security.
@@ -55,13 +56,17 @@ class RSAKeysGenerator:
             iterations=DEFAULT_AES_ITERATIONS,
             backend=default_backend()   # Use the default backend
         )
-        aes_key = kdf.derive(self.pin.encode()) # Derive a secure AES key from the PIN
+        aes_key = kdf.derive(self._pin.encode()) # Derive a secure AES key from the PIN
 
         iv = os.urandom(DEFAULT_AES_IV_LENGTH)
         cipher = Cipher(algorithms.AES(aes_key), modes.CFB(iv), backend=default_backend())
         encryptor = cipher.encryptor()
-        encrypted_private_key = encryptor.update(self.private_key) + encryptor.finalize()
-
+        encrypted_private_key = encryptor.update(self._private_key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=serialization.NoEncryption()
+        )) + encryptor.finalize()
+        print("Encrypted private key successfully!")
         return salt + iv + encrypted_private_key    # Return the encrypted data (salt + IV + ciphertext)
 
     def save_keys(self):
@@ -70,12 +75,14 @@ class RSAKeysGenerator:
         """
         
         # Save the public key in PEM format
-        with open("././keys/public_key.pem", "wb") as f:
-            f.write(self.public_key.public_bytes(
+        with open("./QualifiedElectronicSignature/keys/public_key.pem", "wb") as f:
+            f.write(self._public_key.public_bytes(
                 encoding=serialization.Encoding.PEM,
                 format=serialization.PublicFormat.SubjectPublicKeyInfo
             ))
-        
+        print("Saved public key successfully!")
         # Save the encrypted private key, including salt and IV, for secure storage
-        with open("././keys/private_key.pem", "wb") as f:
-            f.write(self.encrypt_private_key())
+        with open("./QualifiedElectronicSignature/keys/private_key.pem", "wb") as f:
+            f.write(self._encrypt_private_key())
+        print("Saved private key successfully!")
+            
