@@ -1,9 +1,13 @@
 import tkinter as tk
 from frames.MainFrame import MainFrame
 from frames.SignDocumentFrame import SignDocumentFrame
+from frames.VerifySignatureFrame import VerifySignatureFrame
+from frames.EncryptFrame import EncryptFrame
+from frames.DecryptFrame import DecryptFrame
+from frames.AboutUsFrame import AboutUsFrame
 
-DEFAULT_WINDOW_WIDTH = 300
-DEFAULT_WINDOW_HEIGHT = 200
+DEFAULT_WINDOW_WIDTH = 400
+DEFAULT_WINDOW_HEIGHT = 300
 DEFAULT_TITLE = "Security Application - Artur Śpiewak & Przemysław Szumczyk"
 
 class AppController(tk.Tk):
@@ -19,7 +23,7 @@ class AppController(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         # Initializing all frames
-        for F in (MainFrame, SignDocumentFrame):
+        for F in (MainFrame, SignDocumentFrame, VerifySignatureFrame, EncryptFrame, DecryptFrame, AboutUsFrame):
             frame_name = F.__name__
             frame = F(parent=container, controller=self)
             self.frames[frame_name] = frame
