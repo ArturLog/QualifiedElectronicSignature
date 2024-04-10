@@ -1,56 +1,34 @@
 import tkinter as tk
-from tkinter import messagebox
+from frames.MainFrame import MainFrame
 
 DEFAULT_WINDOW_WIDTH = 300
 DEFAULT_WINDOW_HEIGHT = 200
+DEFAULT_TITLE = "Security Application - Artur Śpiewak & Przemysław Szumczyk"
 
-class AppController:
+class AppController(tk.Tk):
     def __init__(self):
-        self.window_width = DEFAULT_WINDOW_WIDTH
-        self.window_height = DEFAULT_WINDOW_HEIGHT
+        tk.Tk.__init__(self)
+        self.title(DEFAULT_TITLE)
+        self.geometry(f"{DEFAULT_WINDOW_WIDTH}x{DEFAULT_WINDOW_HEIGHT}")
         
-    def main_menu(self):
-        
-    def sign_document():
-        # Placeholder for your sign document functionality
-        messagebox.showinfo("Sign Document", "Sign Document functionality goes here.")
+        # Initialize the main frame
+        container = tk.Frame(self)
+        container.pack(side="top", fill="both", expand=True)
 
-    def verify_signature():
-        # Placeholder for your verify signature functionality
-        messagebox.showinfo("Verify Signature", "Verify Signature functionality goes here.")
+        self.frames = {}
+        for F in (MainFrame,):
+            frame_name = F.__name__
+            frame = F(parent=container)
+            self.frames[frame_name] = frame
 
-    def encrypt_file():
-        # Placeholder for your encrypt file functionality
-        messagebox.showinfo("Encrypt File", "Encrypt File functionality goes here.")
+            # Put all of the frames in the same location;
+            # The one on the top of the stacking order
+            # will be the one that is visible.
+            frame.grid(row=0, column=0, sticky="nsew")
 
-    def decrypt_file():
-        # Placeholder for your decrypt file functionality
-        messagebox.showinfo("Decrypt File", "Decrypt File functionality goes here.")
+        self.show_frame("MainFrame")
 
-    def about_us():
-        # Placeholder for your about us information
-        messagebox.showinfo("About Us", "About Us information goes here.")
-
-    # Creating the main window
-    root = tk.Tk()
-    root.title("Security Application")
-
-    # Configuring the main window's size
-    root.geometry("300x200")
-
-    # Creating buttons
-    btn_sign_document = tk.Button(root, text="Sign Document", command=sign_document)
-    btn_verify_signature = tk.Button(root, text="Verify Signature", command=verify_signature)
-    btn_encrypt_file = tk.Button(root, text="Encrypt File", command=encrypt_file)
-    btn_decrypt_file = tk.Button(root, text="Decrypt File", command=decrypt_file)
-    btn_about_us = tk.Button(root, text="About Us", command=about_us)
-
-    # Positioning buttons
-    btn_sign_document.pack(fill=tk.X, padx=50, pady=5)
-    btn_verify_signature.pack(fill=tk.X, padx=50, pady=5)
-    btn_encrypt_file.pack(fill=tk.X, padx=50, pady=5)
-    btn_decrypt_file.pack(fill=tk.X, padx=50, pady=5)
-    btn_about_us.pack(fill=tk.X, padx=50, pady=5)
-
-    # Running the application
-    root.mainloop()
+    def show_frame(self, frame_name):
+        '''Show a frame for the given frame name'''
+        frame = self.frames[frame_name]
+        frame.tkraise()
