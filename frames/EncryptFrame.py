@@ -1,9 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
-
-KEY_EXTENSION = ["pem"]
-FILE_EXTENSION = ["txt", "pdf"]
+from QualifiedElectronicSignature.classes.AppController import KEY_EXTENSION, FILE_EXTENSION
 
 class EncryptFrame(tk.Frame):
     def __init__(self, parent, controller):
