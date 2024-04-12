@@ -1,10 +1,12 @@
 import tkinter as tk
+from tkinter import messagebox
 from frames.MainFrame import MainFrame
 from frames.SignDocumentFrame import SignDocumentFrame
 from frames.VerifySignatureFrame import VerifySignatureFrame
 from frames.EncryptFrame import EncryptFrame
 from frames.DecryptFrame import DecryptFrame
 from frames.AboutUsFrame import AboutUsFrame
+
 
 DEFAULT_WINDOW_WIDTH = 400
 DEFAULT_WINDOW_HEIGHT = 300
@@ -35,3 +37,9 @@ class AppController(tk.Tk):
         '''Show a frame for the given frame name'''
         frame = self.frames[frame_name]
         frame.tkraise()
+    
+    def check_extension(self, file_path ,extensions):
+        if file_path.split('.')[-1] not in extensions:
+            messagebox.showerror("Error", "Invalid file extension")
+            return False
+        return True
