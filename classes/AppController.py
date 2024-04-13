@@ -6,13 +6,7 @@ from frames.VerifySignatureFrame import VerifySignatureFrame
 from frames.EncryptFrame import EncryptFrame
 from frames.DecryptFrame import DecryptFrame
 from frames.AboutUsFrame import AboutUsFrame
-
-
-DEFAULT_WINDOW_WIDTH = 400
-DEFAULT_WINDOW_HEIGHT = 300
-DEFAULT_TITLE = "Security Application - Artur Śpiewak & Przemysław Szumczyk"
-KEY_EXTENSION = ["pem"]
-FILE_EXTENSION = ["txt", "pdf"]
+from config import *
 
 class AppController(tk.Tk):
     def __init__(self):

@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
-from QualifiedElectronicSignature.classes.AppController import KEY_EXTENSION, FILE_EXTENSION
+from config import KEY_EXTENSION, FILE_EXTENSION
 
 class EncryptFrame(tk.Frame):
     def __init__(self, parent, controller):
@@ -25,7 +25,7 @@ class EncryptFrame(tk.Frame):
     def _select_file(self):
         self.file_path = filedialog.askopenfilename()
         if self.file_path and self.controller.check_extension(self.file_path, FILE_EXTENSION):  # Check if a file was actually selected
-            self.filename.set("File path:\n" + self.file_path)
+            self.filename.set("File path:\n" + self.file_path) # TODO zrobic z tego metode w appcontroller
         
     def _select_key(self):
         self.key_path = filedialog.askopenfilename()
