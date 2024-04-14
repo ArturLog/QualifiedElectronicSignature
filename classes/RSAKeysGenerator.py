@@ -3,6 +3,11 @@ from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+
+from Crypto.PublicKey import RSA 
+from Crypto.Cipher import AES 
+from Crypto.Protocol.KDF import PBKDF2 
+from Crypto.Random import get_random_bytes
 import os
 
 DEFAULT_RSA_KEY_SIZE = 4096 # Project requirement: 4096-bit key size
@@ -28,7 +33,12 @@ class RSAKeysGenerator:
         self._public_key = None
         self._pin = pin
     
-    def generate_rsa_keys(self):
+    def generate_keys(self):
+        self._private_key = RSA.generate(bits=DEFAULT_RSA_KEY_SIZE)
+        self._public_key = self._private_key.publickey()
+        print("Generated RSA key pair successfully!")
+    
+    def generate_keys2(self):
         """
         Generates a pair of RSA keys with a 4096-bit key size and a public exponent of 65537,
         which are standard and secure values for RSA encryption.
@@ -40,8 +50,19 @@ class RSAKeysGenerator:
         )
         self._public_key = self._private_key.public_key()
         print("Generated RSA key pair successfully!")
-        
+
     def _encrypt_private_key(self):
+        salt = get_random_bytes(DEFAULT_AES_SALT_LENGTH)  # Generate a random salt
+        key = PBKDF2(self._pin, salt, dkLen=DEFAULT_AES_KEY_LENGTH)  # Derive the AES key
+        
+        cipher = AES.new(key, AES.MODE_CFB)  # Create a new cipher object, automatically generates IV
+        private_key_bytes = self._private_key.export_key()  # Export the private key
+        encrypted_private_key = cipher.encrypt(private_key_bytes)  # Encrypt the private key
+        
+        print("Encrypted private key successfully!")
+        return salt + cipher.iv + encrypted_private_key  # Return the salt, IV, and encrypted private key as a single byte string
+
+    def _encrypt_private_key2(self):
         """
         Encrypts the private key using AES in CFB mode with a key derived from the provided PIN.
         This method uses a salt for the key derivation function to enhance security.
@@ -75,14 +96,11 @@ class RSAKeysGenerator:
         """
         
         # Save the public key in PEM format
-        with open("./QualifiedElectronicSignature/keys/public_key.pem", "wb") as f:
-            f.write(self._public_key.public_bytes(
-                encoding=serialization.Encoding.PEM,
-                format=serialization.PublicFormat.SubjectPublicKeyInfo
-            ))
+        with open("./keys/public_key.pem", "wb") as f:
+            f.write(self._public_key.export_key())
         print("Saved public key successfully!")
         # Save the encrypted private key, including salt and IV, for secure storage
-        with open("./QualifiedElectronicSignature/keys/private_key.pem", "wb") as f:
+        with open("./keys/private_key.pem", "wb") as f:
             f.write(self._encrypt_private_key())
         print("Saved private key successfully!")
             
