@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
+from tkinter import filedialog
 from frames.MainFrame import MainFrame
 from frames.SignDocumentFrame import SignDocumentFrame
 from frames.VerifySignatureFrame import VerifySignatureFrame
@@ -28,6 +29,12 @@ class AppController(tk.Tk):
             frame.grid(row=0, column=0, sticky="nsew")
 
         self.show_frame("MainFrame")
+
+    def select_file(self, extensions=["txt"]):
+        file_path = filedialog.askopenfilename()
+        if file_path and self.check_extension(file_path, extensions):
+            return file_path
+        return ""
 
     def show_frame(self, frame_name):
         '''Show a frame for the given frame name'''
