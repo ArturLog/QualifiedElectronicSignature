@@ -52,15 +52,15 @@ class RSAKeysGenerator:
         print("Generated RSA key pair successfully!")
 
     def _encrypt_private_key(self):
-        salt = get_random_bytes(DEFAULT_AES_SALT_LENGTH)  # Generate a random salt
-        key = PBKDF2(self._pin, salt, dkLen=DEFAULT_AES_KEY_LENGTH)  # Derive the AES key
+        key = PBKDF2(self._pin, dkLen=DEFAULT_AES_KEY_LENGTH)  # Derive the AES key
         
         cipher = AES.new(key, AES.MODE_CFB)  # Create a new cipher object, automatically generates IV
+        
         private_key_bytes = self._private_key.export_key()  # Export the private key
         encrypted_private_key = cipher.encrypt(private_key_bytes)  # Encrypt the private key
         
         print("Encrypted private key successfully!")
-        return salt + cipher.iv + encrypted_private_key  # Return the salt, IV, and encrypted private key as a single byte string
+        return cipher.iv + encrypted_private_key  # Return the salt, IV, and encrypted private key as a single byte string
 
     def _encrypt_private_key2(self):
         """
