@@ -1,4 +1,7 @@
 import tkinter as tk
+import hashlib
+import os
+import psutil
 from tkinter import messagebox
 from tkinter import filedialog
 from frames.MainFrame import MainFrame
@@ -7,6 +10,8 @@ from frames.VerifySignatureFrame import VerifySignatureFrame
 from frames.EncryptFrame import EncryptFrame
 from frames.DecryptFrame import DecryptFrame
 from frames.AboutUsFrame import AboutUsFrame
+from Crypto.PublicKey import RSA 
+from Crypto.Cipher import AES
 from config import *
 
 class AppController(tk.Tk):
@@ -46,3 +51,30 @@ class AppController(tk.Tk):
             messagebox.showerror("Error", "Invalid file extension")
             return False
         return True
+    
+    def check_external_storage(self):
+        partitions = psutil.disk_partitions(all=True)
+        for partition in partitions:
+            if 'removable' in partition.opts:
+                if os.path.exists(partition.mountpoint):
+                    return partition.mountpoint
+        return None
+    
+    def check_private_key_on_external_storage(self, mountpoint):
+        files = os.listdir(mountpoint)
+        for file in files:
+            if file.endswith(".pem"):
+                return os.path.join(mountpoint, file)
+        return None
+    
+    def decrypt_private_key(self, pin, key_path):
+        with open(key_path, "rb") as f:
+            encrypted_key = f.read()
+            
+        iv = encrypted_key[:AES.block_size]
+        encrypted_key = encrypted_key[AES.block_size:]
+
+        key = hashlib.sha256(pin.encode()).digest()
+        cipher = AES.new(key, AES.MODE_CFB, iv)
+        decrypted_key = cipher.decrypt(encrypted_key)
+        return RSA.import_key(decrypted_key)

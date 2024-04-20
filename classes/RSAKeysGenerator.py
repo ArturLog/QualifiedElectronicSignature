@@ -1,14 +1,6 @@
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-
+import hashlib
 from Crypto.PublicKey import RSA 
-from Crypto.Cipher import AES 
-from Crypto.Protocol.KDF import PBKDF2 
-from Crypto.Random import get_random_bytes
-import os
+from Crypto.Cipher import AES
 
 DEFAULT_RSA_KEY_SIZE = 4096 # Project requirement: 4096-bit key size
 DEFAULT_AES_KEY_LENGTH = 32 # AES key length for AES-256 encryption
@@ -35,7 +27,7 @@ class RSAKeysGenerator:
         print("Generated RSA key pair successfully!")
 
     def _encrypt_private_key(self):
-        key = PBKDF2(self._pin, dkLen=DEFAULT_AES_KEY_LENGTH)  # Derive the AES key
+        key = hashlib.sha256(self._pin.encode()).digest()  # Derive the AES key
         
         cipher = AES.new(key, AES.MODE_CFB)  # Create a new cipher object, automatically generates IV
         

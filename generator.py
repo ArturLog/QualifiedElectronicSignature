@@ -6,3 +6,4 @@ if __name__ == "__main__":
     rsa_keys_generator = RSAKeysGenerator(pin)
     rsa_keys_generator.generate_keys()
     rsa_keys_generator.save_keys()
+    exit = input("Generator end job. Press Enter to exit.")
