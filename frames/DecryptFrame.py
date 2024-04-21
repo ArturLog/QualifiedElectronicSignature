@@ -44,9 +44,11 @@ class DecryptFrame(tk.Frame):
             
     def _decrypt_controller(self):
         if self.key_path and self.file_path and self._check_pin():
-            self._decrypt()
-            messagebox.showinfo("Info", "File decrypted successfully")
-            self._clear_paths()
+            if self._decrypt():
+                messagebox.showinfo("Info", "File decrypted successfully")
+                self._clear_paths()
+            else:
+                messagebox.showerror("Error", "Failed to decrypt the private key")
         else:
             messagebox.showerror("Error", "Select file, type PIN and put pendrive with private key first")    
     
@@ -64,17 +66,20 @@ class DecryptFrame(tk.Frame):
         with open(self.file_path, "rb") as file:
             file_content = file.read()
         
-        private_key = self.controller.decrypt_private_key(self.pin, self.key_path) # TODO BAD PIN
-            
+        private_key = self.controller.decrypt_private_key(self.pin, self.key_path)
+        if private_key is None:
+            return False
         cipher = PKCS1_OAEP.new(private_key)
         decrypted_content = cipher.decrypt(file_content)
-        
         with open(self.file_path, "wb") as file:
             file.write(decrypted_content)
+        return True
+        
     
     def _clear_paths(self):
         self.filename.set("")
         self.keyname.set("")
         self.file_path = None
         self.key_path = None     
+        self.pin = None
     

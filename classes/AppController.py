@@ -77,4 +77,7 @@ class AppController(tk.Tk):
         key = hashlib.sha256(pin.encode()).digest()
         cipher = AES.new(key, AES.MODE_CFB, iv)
         decrypted_key = cipher.decrypt(encrypted_key)
-        return RSA.import_key(decrypted_key)
+        try:
+            return RSA.import_key(decrypted_key)
+        except Exception as e:
+            return None
