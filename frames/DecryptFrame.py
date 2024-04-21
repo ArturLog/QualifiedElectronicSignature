@@ -10,6 +10,7 @@ class DecryptFrame(tk.Frame):
         self.key_path = None
         self.file_path = None
         self.pin = None
+        self.pinname = tk.StringVar()
         self.filename = tk.StringVar()
         self.keyname = tk.StringVar()
         tk.Label(self, text="Decrypt").pack(pady=10)
@@ -21,7 +22,7 @@ class DecryptFrame(tk.Frame):
         tk.Label(self, textvariable=self.keyname).pack()
         
         tk.Label(self, textvariable="Enter the PIN").pack()
-        self.pin_entry = tk.Entry(self, show="*", width=4)
+        self.pin_entry = tk.Entry(self, textvariable=self.pinname, show="*", width=4)
         self.pin_entry.pack(pady=5)
         
         tk.Button(self, text="Decrypt", command=self._decrypt_controller).pack(fill=tk.X, padx=50, pady=5)
@@ -43,43 +44,38 @@ class DecryptFrame(tk.Frame):
             messagebox.showerror("Error", "No external storage found")
             
     def _decrypt_controller(self):
-        if self.key_path and self.file_path and self._check_pin():
+        if self.key_path and self.file_path and self.controller.check_pin(self.pin_entry.get()):
             if self._decrypt():
                 messagebox.showinfo("Info", "File decrypted successfully")
-                self._clear_paths()
+                self._clear_variables()
             else:
                 messagebox.showerror("Error", "Failed to decrypt the private key")
         else:
             messagebox.showerror("Error", "Select file, type PIN and put pendrive with private key first")    
-    
-    def _check_pin(self):
-        self.pin = self.pin_entry.get()
-        if not self.pin:
-            messagebox.showerror("Error", "Type PIN first")
-            return False
-        elif len(self.pin) != 4 or not self.pin.isdigit():
-            messagebox.showerror("Error", "PIN must be exactly 4 digits")
-            return False
-        return True
+
     
     def _decrypt(self):
-        with open(self.file_path, "rb") as file:
-            file_content = file.read()
-        
-        private_key = self.controller.decrypt_private_key(self.pin, self.key_path)
-        if private_key is None:
+        try:
+            with open(self.file_path, "rb") as file:
+                file_content = file.read()
+            
+            private_key = self.controller.decrypt_private_key(self.pin_entry.get(), self.key_path)
+            if private_key is None:
+                return False
+            cipher = PKCS1_OAEP.new(private_key)
+            decrypted_content = cipher.decrypt(file_content)
+            with open(self.file_path, "wb") as file:
+                file.write(decrypted_content)
+            return True
+        except Exception as e:
+            print(e)
             return False
-        cipher = PKCS1_OAEP.new(private_key)
-        decrypted_content = cipher.decrypt(file_content)
-        with open(self.file_path, "wb") as file:
-            file.write(decrypted_content)
-        return True
         
     
-    def _clear_paths(self):
+    def _clear_variables(self):
         self.filename.set("")
         self.keyname.set("")
+        self.pinname.set("")
         self.file_path = None
-        self.key_path = None     
-        self.pin = None
+        self.key_path = None
     

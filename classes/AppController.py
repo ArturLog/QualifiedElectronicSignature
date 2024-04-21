@@ -80,4 +80,14 @@ class AppController(tk.Tk):
         try:
             return RSA.import_key(decrypted_key)
         except Exception as e:
+            print(e)
             return None
+    
+    def check_pin(self, pin):
+        if not pin:
+            messagebox.showerror("Error", "Type PIN first")
+            return False
+        elif len(pin) != PIN_LENGHT or not pin.isdigit():
+            messagebox.showerror("Error", f"PIN must be exactly {PIN_LENGHT} digits")
+            return False
+        return True

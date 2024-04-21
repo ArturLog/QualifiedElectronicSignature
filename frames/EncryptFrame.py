@@ -33,25 +33,32 @@ class EncryptFrame(tk.Frame):
     
     def _encrypt_controller(self):
         if self.key_path and self.file_path:
-            self._encrypt()
-            messagebox.showinfo("Info", "File encrypted successfully")
-            self._clear_paths()
+            if self._encrypt():
+                messagebox.showinfo("Info", "File encrypted successfully")
+                self._clear_variables()
+            else:
+                messagebox.showerror("Error", "File encryption failed")
         else:
             messagebox.showerror("Error", "Select file and key first")       
     
     def _encrypt(self):
-        with open(self.file_path, "rb") as file:
-            file_content = file.read()
-        with open(self.key_path, "r") as key:
-            public_key = RSA.import_key(key.read())
+        try:
+            with open(self.file_path, "rb") as file:
+                file_content = file.read()
+            with open(self.key_path, "r") as key:
+                public_key = RSA.import_key(key.read())
+                    
+            cipher_rsa = PKCS1_OAEP.new(public_key)
+            encrypted_content = cipher_rsa.encrypt(file_content)
                 
-        cipher_rsa = PKCS1_OAEP.new(public_key)
-        encrypted_content = cipher_rsa.encrypt(file_content)
-            
-        with open(self.file_path, "wb") as file:
-            file.write(encrypted_content)
+            with open(self.file_path, "wb") as file:
+                file.write(encrypted_content)
+            return True
+        except Exception as e:
+            print(e)
+            return False
     
-    def _clear_paths(self):
+    def _clear_variables(self):
         self.filename.set("")
         self.keyname.set("")
         self.file_path = None
