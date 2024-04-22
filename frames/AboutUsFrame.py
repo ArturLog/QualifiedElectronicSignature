@@ -3,7 +3,6 @@ import tkinter as tk
 class AboutUsFrame(tk.Frame):
     """
     A frame that provides information about the application and its authors.
-    This frame is part of a larger application that handles electronic document operations.
     """
     def __init__(self, parent, controller):
         """

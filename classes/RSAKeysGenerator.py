@@ -1,10 +1,9 @@
 import hashlib
 from Crypto.PublicKey import RSA 
 from Crypto.Cipher import AES
+from config import DEFAULT_RSA_KEY_SIZE
 
-# Default constants for key sizes
-DEFAULT_RSA_KEY_SIZE = 4096  # Use a 4096-bit RSA key
-DEFAULT_AES_KEY_LENGTH = 32  # AES key length set to 32 bytes (256 bits) for AES-256 encryption
+
 
 class RSAKeysGenerator:
     """

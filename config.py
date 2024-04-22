@@ -18,3 +18,9 @@ SIGNATURE_EXTENSION = ["xml"]
 
 # Required length of the PIN for encryption and decryption operations.
 PIN_LENGTH = 4
+
+# Use a 4096-bit RSA key
+DEFAULT_RSA_KEY_SIZE = 4096  
+
+# AES key length set to 32 bytes (256 bits) for AES-256 encryption
+DEFAULT_AES_KEY_LENGTH = 32  
