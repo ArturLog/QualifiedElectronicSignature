@@ -9,4 +9,8 @@ python -m venv .venv
 # Install requirements from requirements.txt
 pip install -r requirements.txt
 
-# Run
+# Run generator.py to generate pair of RSA keys
+./generator.py
+
+# Run app.py to run application
+./app.py

@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter import messagebox
 
 class MainFrame(tk.Frame):
     def __init__(self, parent, controller):
